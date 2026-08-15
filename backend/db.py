@@ -203,6 +203,19 @@ class _PgCursor:
         # fetch") on a cursor that has nothing to fetch from.
         self._no_result = no_result
 
+    def execute(self, sql, params=None):
+        """Supports the classic sqlite3 two-step pattern (cur = conn.cursor();
+        cur.execute(sql); cur.fetchall()), used directly in backend/main.py's
+        build_portfolio_response, distinct from the conn.execute(...).fetchall()
+        one-step chaining pattern used elsewhere in this codebase."""
+        pg_sql = _qmark_to_pyformat(sql)
+        if pg_sql.strip().upper().startswith("PRAGMA"):
+            self._no_result = True
+            return self
+        self._no_result = False
+        self._cursor.execute(pg_sql, params or ())
+        return self
+
     def fetchone(self):
         if self._no_result:
             return None
@@ -261,6 +274,13 @@ class _PgConnection:
     def executescript(self, sql):
         cur = self._conn.cursor()
         cur.execute(sql)
+
+    def cursor(self):
+        """sqlite3.Connection.cursor()-compatible: returns a _PgCursor with
+        no query executed yet, for the cur = conn.cursor(); cur.execute(sql);
+        cur.fetchall() pattern used directly in backend/main.py."""
+        raw_cursor = self._conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        return _PgCursor(raw_cursor, no_result=True)
 
     def commit(self):
         self._conn.commit()
