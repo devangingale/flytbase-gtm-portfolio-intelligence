@@ -1,0 +1,152 @@
+{
+  "discovered_at": "2026-08-15T06:31:06.736904+00:00",
+  "endpoint": "https://flytbase-gtm-hackathon.lovable.app/api/mcp",
+  "initialize_result": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "tools": {}
+    },
+    "serverInfo": {
+      "name": "flytbase-book-of-business",
+      "version": "1.0.0"
+    }
+  },
+  "tools": [
+    {
+      "name": "list_accounts",
+      "description": "List every account in the Book of Business with its raw CRM-style metadata (id, vertical, lifecycle stage, ARR, docks, health, sentiment, tier, owners, tagged champion). No analysis applied \u2014 health/sentiment fields are exactly what's in the source record, including any that contradict other evidence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "get_account",
+      "description": "Get full metadata for one account by id, plus the list of source documents available for it (without their content \u2014 use list_account_documents or get_account_document to read them).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account id, e.g. 'northline-grid'"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_account_documents",
+      "description": "List the source documents (profile, transcripts, renewal tables, tickets, notes, emails) available for a given account, with their file names and types.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account id"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "get_account_document",
+      "description": "Fetch the full raw content (markdown) of one specific document for an account. Use list_account_documents first to get valid file names.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account id"
+          },
+          "file": {
+            "type": "string",
+            "description": "Document file name, from list_account_documents"
+          }
+        },
+        "required": [
+          "id",
+          "file"
+        ]
+      }
+    },
+    {
+      "name": "search_documents",
+      "description": "Crude substring search across every document in the Book of Business (case-insensitive). Not semantic search \u2014 returns raw matching lines with surrounding context. Useful for finding where a keyword, name, or figure appears across the whole portfolio.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Substring to search for"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "get_account_usage",
+      "description": "Monthly flight-hour and mission-count history for one account, where available (accounts that are actively flying \u2014 not every account has usage history, e.g. pre-sale prospects). Returns an empty array if there's none. This is a live series \u2014 like everything else here, poll it rather than caching it once.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account id"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "se_list_dataset_files",
+      "description": "List the files in the SE track's customer-data corpus (accounts, issues, feature requests, tasks, meeting notes) \u2014 for the Knowledge Base and Product Feedback Lifecycle problem statements. Unrelated to the CS Book of Business tools above. Also available as a single zip download from the Problem Statements page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "se_get_dataset_file",
+      "description": "Fetch the full raw markdown content of one file from the SE dataset. Use se_list_dataset_files first for valid file names. Files are large (the issues and meeting-notes files run to several thousand lines) \u2014 this returns the whole thing, not a page of it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "File name, e.g. 'accounts.md'"
+          }
+        },
+        "required": [
+          "file"
+        ]
+      }
+    },
+    {
+      "name": "se_search_dataset",
+      "description": "Crude substring search across every file in the SE dataset (case-insensitive). Not semantic search \u2014 returns raw matching lines with surrounding context.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Substring to search for"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  ],
+  "resources": []
+}

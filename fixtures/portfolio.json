@@ -1,0 +1,338 @@
+{
+  "meta": {
+    "generated_at": "2026-08-15T11:42:08Z",
+    "last_sync_at": "2026-08-15T11:41:52Z",
+    "sync_status": "ok",
+    "source_doc_count": 87
+  },
+  "totals": {
+    "arr_total": 1840000,
+    "arr_secure": 1120000,
+    "arr_at_risk": 430000,
+    "arr_lost": 290000,
+    "forecast": 1310000,
+    "forecast_basis": "Secure ARR plus 45 percent of at risk ARR, weighted by renewal proximity and usage trend."
+  },
+  "accounts": [
+    {
+      "id": "acct_001",
+      "name": "Meridian Infrastructure Group",
+      "stage": "active_customer",
+      "arr": 240000,
+      "renewal_date": "2026-11-01",
+      "health": {
+        "derived": "at_risk",
+        "crm_label": "healthy",
+        "mismatch": true,
+        "mismatch_reason": "CRM says healthy, flight hours down 43 percent over three months and primary champion has not responded in 31 days."
+      },
+      "contacts": [
+        {
+          "name": "Priya Raghunathan",
+          "title": "Director of Field Operations",
+          "role": "champion",
+          "influence": "high",
+          "last_contact_at": "2026-07-15",
+          "status": "gone_quiet"
+        },
+        {
+          "name": "Tom Beckwith",
+          "title": "VP Infrastructure",
+          "role": "economic_buyer",
+          "influence": "high",
+          "last_contact_at": "2026-05-02",
+          "status": "cold"
+        }
+      ],
+      "usage": {
+        "trend": "declining",
+        "pct_change": -43.2,
+        "series": [
+          { "month": "2026-03", "flight_hours": 412, "missions": 188 },
+          { "month": "2026-04", "flight_hours": 388, "missions": 171 },
+          { "month": "2026-05", "flight_hours": 301, "missions": 140 },
+          { "month": "2026-06", "flight_hours": 254, "missions": 112 },
+          { "month": "2026-07", "flight_hours": 234, "missions": 104 }
+        ]
+      },
+      "risks": [
+        {
+          "id": "risk_001",
+          "title": "Champion disengagement ahead of renewal",
+          "severity": "high",
+          "summary": "Primary champion stopped responding after a July escalation. Renewal is 78 days out with no scheduled business review.",
+          "evidence": ["doc_014", "doc_019"]
+        },
+        {
+          "id": "risk_002",
+          "title": "Sustained usage decline",
+          "severity": "high",
+          "summary": "Flight hours have fallen every month since March with no seasonal explanation offered by the account.",
+          "evidence": ["doc_021"]
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "opp_001",
+          "title": "Second site expansion mentioned on May call",
+          "value_estimate": 90000,
+          "is_trap": true,
+          "counter_signal": "Raised by a field engineer with no budget authority, never echoed by the economic buyer, and predates the July escalation.",
+          "evidence": ["doc_009"]
+        }
+      ],
+      "claims": [
+        {
+          "id": "clm_001",
+          "field": "champion",
+          "value": "Priya Raghunathan, Director of Field Operations",
+          "confidence": "high",
+          "evidence": ["doc_009", "doc_014"]
+        },
+        {
+          "id": "clm_002",
+          "field": "renewal_sentiment",
+          "value": "Unstated. No renewal conversation has occurred in any recorded interaction.",
+          "confidence": "medium",
+          "evidence": ["doc_014", "doc_019"]
+        }
+      ],
+      "winback": null
+    },
+    {
+      "id": "acct_007",
+      "name": "Casterly Utilities",
+      "stage": "churned",
+      "arr": 0,
+      "renewal_date": "2026-02-01",
+      "health": {
+        "derived": "lost",
+        "crm_label": "churned",
+        "mismatch": false,
+        "mismatch_reason": null
+      },
+      "contacts": [
+        {
+          "name": "Dana Okonkwo",
+          "title": "Head of Grid Inspection",
+          "role": "former_champion",
+          "influence": "medium",
+          "last_contact_at": "2026-01-28",
+          "status": "lapsed"
+        }
+      ],
+      "usage": null,
+      "risks": [],
+      "opportunities": [],
+      "claims": [
+        {
+          "id": "clm_044",
+          "field": "churn_reason",
+          "value": "Lost to an incumbent inspection vendor bundled into a broader grid services contract. Not a product failure.",
+          "confidence": "high",
+          "evidence": ["doc_061"]
+        }
+      ],
+      "winback": {
+        "applicable": true,
+        "worth_pursuing": true,
+        "rationale": "Churn was procurement driven, not product driven. The bundled vendor contract is up in Q1 2027 and the former champion is still in role.",
+        "required_effort": "Re-engage Dana Okonkwo by October with a grid-specific ROI case. Needs a solutions engineer for one scoping call. Estimated 3 to 4 touches over two months."
+      }
+    },
+    {
+      "id": "acct_011",
+      "name": "Northwind Ports Authority",
+      "stage": "prospect",
+      "arr": 0,
+      "renewal_date": null,
+      "health": {
+        "derived": "warm",
+        "crm_label": "warm",
+        "mismatch": false,
+        "mismatch_reason": null
+      },
+      "contacts": [
+        {
+          "name": "Ellis Vance",
+          "title": "Security Operations Manager",
+          "role": "evaluator",
+          "influence": "medium",
+          "last_contact_at": "2026-08-11",
+          "status": "engaged"
+        }
+      ],
+      "usage": null,
+      "risks": [
+        {
+          "id": "risk_030",
+          "title": "No economic buyer identified",
+          "severity": "medium",
+          "summary": "Four recorded interactions, all with the evaluator. Budget owner has never appeared in any thread.",
+          "evidence": ["doc_072", "doc_078"]
+        }
+      ],
+      "opportunities": [
+        {
+          "id": "opp_014",
+          "title": "Perimeter security pilot across two terminals",
+          "value_estimate": 140000,
+          "is_trap": false,
+          "counter_signal": null,
+          "evidence": ["doc_072", "doc_081"]
+        }
+      ],
+      "claims": [
+        {
+          "id": "clm_071",
+          "field": "buying_stage",
+          "value": "Technical evaluation complete, commercial conversation not started.",
+          "confidence": "medium",
+          "evidence": ["doc_081"]
+        }
+      ],
+      "winback": null
+    }
+  ],
+  "actions": [
+    {
+      "id": "act_001",
+      "account_id": "acct_001",
+      "action": "Book an executive business review with Tom Beckwith this week, going around the quiet champion.",
+      "why": "240k renewal in 78 days, usage down 43 percent, champion silent for 31 days, and no renewal conversation on record.",
+      "reason_codes": ["renewal_proximity", "usage_decline", "champion_silent", "no_renewal_conversation"],
+      "urgency": 96,
+      "bucket": "now",
+      "evidence": ["doc_014", "doc_019", "doc_021"]
+    },
+    {
+      "id": "act_002",
+      "account_id": "acct_011",
+      "action": "Ask Ellis Vance to name the budget owner before scoping the pilot further.",
+      "why": "Technical evaluation is done but no economic buyer has appeared in four interactions. Further SE time is unqualified spend.",
+      "reason_codes": ["no_economic_buyer", "se_time_at_risk"],
+      "urgency": 71,
+      "bucket": "this_week",
+      "evidence": ["doc_072", "doc_078"]
+    },
+    {
+      "id": "act_003",
+      "account_id": "acct_007",
+      "action": "Open a winback sequence with Dana Okonkwo targeting the Q1 2027 contract window.",
+      "why": "Churn was procurement driven rather than product driven, and the former champion is still in role.",
+      "reason_codes": ["winnable_churn", "champion_in_role", "contract_window_known"],
+      "urgency": 44,
+      "bucket": "watch",
+      "evidence": ["doc_061"]
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc_009",
+      "account_id": "acct_001",
+      "type": "call_transcript",
+      "title": "Quarterly check in with field ops",
+      "date": "2026-05-14",
+      "excerpt": "Field engineer raises the idea of adding the northern site next year. No budget discussion follows and the VP is not on the call.",
+      "status": "active"
+    },
+    {
+      "id": "doc_014",
+      "account_id": "acct_001",
+      "type": "email",
+      "title": "Re: inspection workflow delays",
+      "date": "2026-07-15",
+      "excerpt": "Champion raises repeated mission planning failures and asks for an escalation path. This is the last recorded inbound message from her.",
+      "status": "active"
+    },
+    {
+      "id": "doc_019",
+      "account_id": "acct_001",
+      "type": "support_ticket",
+      "title": "Mission planner timeout on multi-waypoint routes",
+      "date": "2026-07-18",
+      "excerpt": "Ticket opened at high severity, resolved after nine days, no follow up contact logged afterward.",
+      "status": "active"
+    },
+    {
+      "id": "doc_021",
+      "account_id": "acct_001",
+      "type": "usage_record",
+      "title": "Monthly flight usage March to July 2026",
+      "date": "2026-08-01",
+      "excerpt": "Flight hours declined in each of five consecutive months.",
+      "status": "active"
+    },
+    {
+      "id": "doc_030",
+      "account_id": "acct_001",
+      "type": "internal_note",
+      "title": "AE notes: account considered stable",
+      "date": "2026-06-02",
+      "excerpt": "Note asserting the account is stable and low touch. Superseded and withdrawn from the source system.",
+      "status": "withdrawn"
+    },
+    {
+      "id": "doc_061",
+      "account_id": "acct_007",
+      "type": "call_transcript",
+      "title": "Offboarding call",
+      "date": "2026-01-28",
+      "excerpt": "Former champion explains the inspection scope was folded into a wider grid services procurement. She states the tool itself was not the issue.",
+      "status": "active"
+    },
+    {
+      "id": "doc_072",
+      "account_id": "acct_011",
+      "type": "call_transcript",
+      "title": "Discovery call, terminal security",
+      "date": "2026-07-29",
+      "excerpt": "Evaluator describes two terminals needing overnight perimeter coverage and asks about autonomous docking.",
+      "status": "active"
+    },
+    {
+      "id": "doc_078",
+      "account_id": "acct_011",
+      "type": "email",
+      "title": "Follow up questions on BVLOS",
+      "date": "2026-08-05",
+      "excerpt": "Evaluator forwards regulatory questions from an unnamed colleague. No new participant joins the thread.",
+      "status": "active"
+    },
+    {
+      "id": "doc_081",
+      "account_id": "acct_011",
+      "type": "internal_note",
+      "title": "SE notes after technical deep dive",
+      "date": "2026-08-11",
+      "excerpt": "Technical fit confirmed, no blockers identified, commercial path still undefined.",
+      "status": "active"
+    }
+  ],
+  "change_feed": [
+    {
+      "id": "chg_009",
+      "at": "2026-08-15T11:41:52Z",
+      "account_id": "acct_001",
+      "type": "document_withdrawn",
+      "description": "Internal note doc_030 (AE notes: account considered stable) is no longer available in the source system.",
+      "consequence": "One claim invalidated. Derived health moved from healthy to at risk, and the CRM label mismatch is now flagged."
+    },
+    {
+      "id": "chg_008",
+      "at": "2026-08-15T11:41:52Z",
+      "account_id": "acct_001",
+      "type": "usage_updated",
+      "description": "July flight usage added, 234 hours across 104 missions.",
+      "consequence": "Fifth consecutive monthly decline. Usage decline detector escalated from medium to high."
+    },
+    {
+      "id": "chg_007",
+      "at": "2026-08-15T11:20:04Z",
+      "account_id": "acct_011",
+      "type": "document_added",
+      "description": "New internal note doc_081 from the technical deep dive.",
+      "consequence": "Buying stage claim updated to technical evaluation complete. New action queued to identify the economic buyer."
+    }
+  ]
+}

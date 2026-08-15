@@ -1,0 +1,66 @@
+services:
+  - type: web
+    name: flytbase-gtm-backend
+    runtime: python
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: python backend/main.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: MCP_TOKEN
+        sync: false
+      - key: MCP_ENDPOINT
+        value: https://flytbase-gtm-hackathon.lovable.app/api/mcp
+      - key: NIM_API_KEY
+        sync: false
+      - key: NIM_BASE_URL
+        value: https://integrate.api.nvidia.com/v1
+      - key: NIM_EXTRACTION_MODEL
+        value: nvidia/llama-3.3-nemotron-super-49b-v1
+      - key: NIM_SYNTHESIS_MODEL
+        value: nvidia/llama-3.3-nemotron-super-49b-v1
+      - key: SYNC_SECRET
+        generateValue: true
+      - key: DB_PATH
+        value: /var/data/gtm.db
+      - key: GTM_DB_PATH
+        value: /var/data/gtm.db
+      - key: SYNC_INTERVAL_SECONDS
+        value: "300"
+    disk:
+      name: gtm-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: cron
+    name: flytbase-gtm-sync-heartbeat
+    runtime: python
+    plan: starter
+    region: oregon
+    rootDir: .
+    schedule: "*/5 * * * *"
+    buildCommand: pip install requests
+    startCommand: >
+      python -c "
+      import os, sys, requests;
+      url = 'http://' + os.environ['BACKEND_URL'].rstrip('/') + '/api/sync';
+      r = requests.post(url, headers={'X-Sync-Secret': os.environ['SYNC_SECRET']}, timeout=280);
+      print(r.status_code, r.text);
+      sys.exit(0 if r.status_code == 200 else 1)
+      "
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: flytbase-gtm-backend
+          property: hostport
+      - key: SYNC_SECRET
+        fromService:
+          type: web
+          name: flytbase-gtm-backend
+          property: envVarKey
+          envVarKey: SYNC_SECRET
