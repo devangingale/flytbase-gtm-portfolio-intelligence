@@ -373,6 +373,72 @@ generated reason string above was in scope and got fixed.
   per `FRONTEND_PRD.md`'s existing single-env-var-swap contract. No frontend
   code changes needed for deployment.
 
+## SQLite to Postgres (Supabase) migration
+
+- Render's free tier has no persistent disk and spins down idle instances,
+  both fatal to a local SQLite file and the in-process 5-minute sync loop.
+  User chose Supabase Postgres over paying for Render's Starter tier disk.
+- New Supabase project `flytbase-gtm-portfolio` (ap-south-1, free tier,
+  isolated from the user's unrelated pre-existing "RAG Pipeline Flytbase"
+  project per explicit confirmation). Row Level Security intentionally left
+  disabled on all 5 tables: the backend only ever connects via a direct
+  Postgres connection string (psycopg2), never Supabase's REST API or
+  client SDK, so the anon-key/RLS attack surface Supabase's advisory warns
+  about does not apply here. Confirmed with the user before proceeding.
+- Direct connection (`db.<ref>.supabase.co:5432`) is IPv6-only on the free
+  tier. Render (and this local dev machine) are IPv4-only, confirmed
+  against Supabase's own docs which explicitly list Render as an
+  IPv6-incompatible platform. Used the Supavisor shared pooler in session
+  mode instead (`aws-0-ap-south-1.pooler.supabase.com:5432`, username
+  `postgres.<project-ref>` not plain `postgres`), which is IPv4 on every
+  tier. Session mode (not transaction mode) chosen because this is one
+  long-lived FastAPI process making a persistent connection, not serverless
+  or many short-lived clients.
+- Rewrote `backend/db.py` to use `psycopg2` instead of `sqlite3`, but kept
+  every exported function's exact name and signature unchanged, via a thin
+  `_PgConnection` / `_PgCursor` adapter that mimics sqlite3's
+  `conn.execute(sql, params).fetchone()/.fetchall()` chaining shape,
+  rewrites `?` placeholders to `%s`, and returns dict-like rows
+  (`RealDictCursor`). This let `backend/sync_worker.py`, `backend/pipeline.py`,
+  and `backend/main.py` keep working with zero changes, including their
+  direct `conn.execute(...)` calls outside the `db.py` helper functions
+  (e.g. `pipeline.py`'s `DELETE FROM actions`).
+- `sync_worker.py`'s `PRAGMA database_list` call (used only to resolve the
+  on-disk file path of a `sqlite3.Connection` for the per-tick reconnect
+  workaround) has no Postgres meaning. The adapter intercepts any `PRAGMA`
+  statement and returns an empty result instead of erroring, so that
+  caller's existing "row is None, fall back to a default" path runs
+  unchanged rather than needing a code edit.
+- Array-typed columns (`source_doc_ids`, `reason_codes`) kept as
+  JSON-encoded TEXT (same as SQLite) rather than migrated to native
+  Postgres `jsonb`/`text[]`, to avoid touching the `encode_list`/
+  `decode_list` call sites in every other already-verified module.
+- Found and fixed a real, pre-existing schema bug while porting: `claims.confidence`
+  was typed `REAL` in the original SQLite schema, but every real caller
+  (`extraction.py`, `synthesis.py`) always writes a string
+  (`"high"|"medium"|"low"`), never a numeric score. SQLite silently
+  tolerated this (no column type enforcement); Postgres correctly rejected
+  the first real insert with `InvalidTextRepresentation`. Fixed the column
+  to `TEXT` via migration, on both the live Supabase table and the
+  `_SCHEMA` source string in `db.py` (for anyone re-running
+  `get_connection()` against a fresh database).
+- Verified with a full functional round-trip test covering every exported
+  helper (upsert doc, insert/invalidate claims with `source_doc_ids`
+  round-tripping as a Python list, withdraw doc, dirty tracking on both an
+  existing and not-yet-existing `account_state` row, `upsert_account_state`,
+  actions, `append_change_log`'s `RETURNING id` path, em dash stripping,
+  and the `PRAGMA` no-op path) against the real Supabase Postgres instance,
+  not a mock. All passed after the confidence column fix.
+- `DB_PATH` / `GTM_DB_PATH` env vars (the earlier SQLite file-path
+  mismatch noted above) are now vestigial: `get_connection()` only treats
+  its `db_path` argument as meaningful if it looks like a connection
+  string (contains `://` or starts with `postgres`), otherwise it falls
+  back to `DATABASE_URL` / `SUPABASE_DB_URL` / `POSTGRES_URL`. Render's
+  `render.yaml` blueprint (written before this migration, for the
+  SQLite+disk plan) is superseded; the actual deploy uses a plain Render
+  Web Service with `DATABASE_URL` set to the Supabase pooler string,
+  no persistent disk needed.
+
 ## Frontend Live Integration & Fixture Decoupling
 
 - Decoupled frontend from local mock fixture files (`fixtures/portfolio.json`). Removed Vite mock middleware.

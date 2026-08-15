@@ -1,0 +1,31 @@
+name: Sync heartbeat
+
+# Redundant safety net alongside the backend's own in-process APScheduler
+# loop (see backend/sync_worker.py start_scheduler). Also keeps the Render
+# free-tier web service from spinning down after 15 minutes idle, since
+# this counts as inbound traffic. See DECISIONS.md.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST /api/sync
+        run: |
+          status=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            -X POST "${BACKEND_URL%/}/api/sync" \
+            -H "X-Sync-Secret: ${SYNC_SECRET}" \
+            --max-time 280)
+          echo "status: $status"
+          cat /tmp/response.txt
+          if [ "$status" != "200" ]; then
+            echo "sync endpoint returned non-200"
+            exit 1
+          fi
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
